@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".Workout_Saved">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="15dp"
+        android:text="This is all the save exercises.Remove an exercise from clicking an item. This remove is removing from database. To view all exercise details, click VIEW ALL EXERCISES button. If you can't see the change please use back button and come back in to see the update or click on VIEW ALL EXERCISE to see the data update."
+        />
+
+    <Button
+        android:id="@+id/viewAll"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="VIEW ALL EXERCISES "/>
+
+    <ListView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/myWorkoutList"
+        />
+
+</LinearLayout>

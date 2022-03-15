@@ -1,0 +1,121 @@
+package edu.gmu.project2version4_tkarawap4;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.ListAdapter;
+import android.widget.ListView;
+import android.widget.SimpleCursorAdapter;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import java.util.ArrayList;
+
+public class SetupEditWorkout extends AppCompatActivity {
+    private SQLiteDatabase db = null;
+    private DatabaseOpenHelper dbHelper = null;
+    private Button addWorkout, update;
+    SimpleCursorAdapter myAdapter;
+    ListView setEditList;
+    String selectText;
+    String myString;
+
+
+
+    public String getMyString() {
+        return myString;
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_setup_edit_workout);
+
+        addWorkout = (Button) findViewById(R.id.addWorkoutButton);
+        setEditList = (ListView)findViewById(R.id.setupEditlist);
+        dbHelper = new DatabaseOpenHelper(this);
+
+        addWorkout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(SetupEditWorkout.this, CreateWorkout.class);
+                startActivity(intent);
+            }
+        });
+
+        ArrayList<String> theList = new ArrayList<>();
+        Cursor data = dbHelper.getData();
+        if(data.getCount() == 0) {
+            Toast.makeText(this, "There are no contents in this list!",Toast.LENGTH_LONG).show();
+        }else{
+            while(data.moveToNext()){
+                theList.add(data.getString(0));
+                ListAdapter listAdapter = new ArrayAdapter<>(this,android.R.layout.simple_list_item_1,theList);
+                setEditList.setAdapter(listAdapter);
+            }
+        }
+
+
+        setEditList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long is) {
+                selectText = (String) (setEditList.getItemAtPosition(position));
+                myString = selectText;
+                Cursor pointData = dbHelper.getData();
+                if(pointData.getCount() == 0) {
+                    Toast.makeText(SetupEditWorkout.this, "No Data Found", Toast.LENGTH_LONG).show();
+                    return;
+                }
+                StringBuffer buffer = new StringBuffer();
+                selectText = (String) (setEditList.getItemAtPosition(position));
+                myString = selectText;
+                Toast.makeText(SetupEditWorkout.this, "The exercise name is: " + myString, Toast.LENGTH_SHORT).show();
+
+                while(pointData.moveToNext()) {
+                    if (pointData.getString(0).equals(myString)) {
+                        buffer.append("Exercise Name: " + pointData.getString(0) + "\n");
+                        buffer.append("Number Reps: " + pointData.getString(1) + "\n");
+                        buffer.append("Number Sets: " + pointData.getString(2) + "\n");
+                        buffer.append("Weight: " + pointData.getString(3) + "\n");
+                        buffer.append("Notes: " + pointData.getString(4) + "\n\n");
+                    }
+                }
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(SetupEditWorkout.this);
+                builder.setCancelable(true);
+                builder.setTitle("Workout Data");
+                builder.setMessage(buffer.toString());
+                builder.show();
+
+            }
+
+        });
+        /* Use long click to go to update exercise */
+        setEditList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
+                selectText = (String) (setEditList.getItemAtPosition(position));
+                myString = selectText;
+                if (selectText == null) {
+                    myString = "";
+                    Toast.makeText(SetupEditWorkout.this, "Exercise Name that you clicked is null", Toast.LENGTH_SHORT).show();
+                    return false;
+                }
+                Toast.makeText(SetupEditWorkout.this, "The exercise name is " + myString, Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(SetupEditWorkout.this, UpdateWorkout.class);
+                intent.putExtra("myString", myString);
+                startActivity(intent);
+                return true;
+            }
+        });
+
+    }
+}
